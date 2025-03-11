@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-LIBRARY</title>
+    <link rel="icon" href="static/img/mainlogo.webp">
+    <link rel="stylesheet" href="static/css/style.css">
+    <script src="static/js/script.js"></script>
+    <style>
+        .selection_bar {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: rgb(80, 76, 141);
+            padding: 20px;
+            border-radius: 20px;
+            width: 40%;
+            margin-top: 20px;
+            color: white;
+            text-align: center;
+            position: static;
+        }
+
+        select {
+            padding: 10px;
+            border: none;
+            border-radius: 10px;
+            outline: none;
+            background-color: #eee;
+            transition: border 0.3s ease-in-out;
+        }
+        select:focus {
+            border: none;
+        }
+
+        .content {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            width: 90%;
+            padding: 40px;
+            background-color: #fff;
+            border-radius: 10px;
+            margin-bottom: 100px;
+            margin-top: 80px;
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
+        }
+        .section {
+            display: flex;
+            flex-wrap: wrap;
+            flex-direction: row;
+        }
+        .card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: white;
+            margin: 15px;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+            width: 200px;
+            text-align: center;
+        }
+
+        .card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 10px 10px 0 0;
+        }
+
+        .card_title {
+            font-size: 18px;
+            font-weight: bold;
+            margin: 10px 0;
+            color: rgb(24, 128, 124);
+        }
+
+        .card_price {
+            font-size: 16px;
+            color: green;
+            margin-bottom: 10px;
+            transition: all 1s ease-in;
+        }
+        .card_price:hover {
+            transform: scale(2,2);
+            background-color: azure;
+            color: black    ;
+        }
+        .card_footer {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            padding-top: 10px;
+        }
+        .btn {
+            padding: 10px 20px;
+            gap: 5px;
+            background-color: rgb(80, 76, 141);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 15px;
+            cursor: pointer;
+            transition: background 0.3s;
+            font-weight: bold;
+        }
+        .danger {
+            background-color: rgb(214, 116, 116);
+        }
+        .success {
+            background-color: rgb(128, 205, 128);
+        }
+        .info {
+            background-color: rgb(225, 47, 85);
+        }
+        .card_footer button:hover {
+            background-color: rgb(24, 128, 124);
+        }
+        .popup_alert {
+            position: fixed;
+            top: 20px;
+            right: -300px;  
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
+            transition: right 0.5s ease-in-out;
+            z-index: 9999;
+        }
+        
+        .popup_image img {
+            width: 50px;
+            height: 50px;
+            margin-right: 10px;
+        }
+        
+        .popup_message {
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .show_popup {
+            right: 20px !important; /* Moves it into view */
+        }
+        .hide_popup {
+            right: -300px !important; /* Moves it out of view */
+        }
+        
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div class="navigation_logo">
+            <img class="nav_logo" src="static/img/mainlogo.webp" alt="Logo">
+            <a class="nav-link" href="index.html"><strong>E-LIBRARY</strong></a>
+        </div>
+        <ul class="navigation_section">
+            <li class="nav-item"><a class="nav-link" href="index.html">HOME</a></li>
+            <li class="nav-item"><a class="nav-link" href="about.html">ABOUT</a></li>
+            <li class="nav-item"><a class="nav-link" href="contact.html">CONTACT</a></li>
+            <li class="nav-item"><a class="nav-link" href="user.html">LOGIN</a></li>
+        </ul>
+        <button class="menu_btn" type="button" id="menu_btn">Menu</button>
+        <ul class="mobile-menu" id="mobile_menu">
+            <li class="mobile-item"><a class="mobile-link" href="index.html">HOME</a></li>
+            <li class="mobile-item"><a class="mobile-link" href="about.html">ABOUT</a></li>
+            <li class="mobile-item"><a class="mobile-link" href="contact.html">CONTACT</a></li>
+            <li class="mobile-item"><a class="mobile-link" href="user.html">LOGIN</a></li>
+        </ul>
+    </div>
+
+    <div id="popup_alert" class="popup_alert hide_popup">
+        <div class="popup_image">
+            <img src="static/img/success-icon.png" alt="Success">
+        </div>
+        <div class="popup_message">
+            <h3 id="popup_text">Purchase Successful!!!</h3>
+        </div>
+    </div>
+
+    <div class="selection_bar" id="selection_bar">
+        <label><b>DEPARTMENT</b></label> &nbsp;&nbsp;
+        <select name="department" id="department">
+            <option value="" disabled selected>SELECT DEPARTMENT</option>
+            <option value="cse">CSE</option>
+            <option value="ece">ECE</option>
+            <option value="eee">EEE</option>
+            <option value="ce">CE</option>
+            <option value="che">CHE</option>
+            <option value="mech">MECH</option>
+            <option value="mme">MME</option>
+        </select>
+    </div>
+
+    <div class="content">
+        <div class="section_heading"><b>E-LIBRARY </b></div>
+        <div class="section" id="cse" style="display: none;">
+            <div class="card" id="cse001">
+                <img src="static/img/cse/let_us_c.jpg" alt="Book">
+                <div class="card_title" style="color: rgb(40, 136, 77);">Let Us C - Yashavant Kanetkar</div>
+                <div class="card_price" style="color: white;font-weight:bold;background-color:darkslategrey;padding:10px;">₹450</div>
+                <div class="card_footer">
+                    <button class="btn success" onclick="BuyNow('cse001')">Buy Now</button>
+                    <button class="btn info" onclick="AddToCart('cse001')">Add to Cart</button>
+                </div>
+            </div>            
+            <div class="card" id="cse002">
+                <img src="static/img/cse/introduction_to_algorithms.jpg" alt="Book">
+                <div class="card_title" style="color: rgb(40, 136, 77);">Introduction to Algorithms - Thomas H. Cormen, Charles E. Leiserson, Ronald L. Rivest, Clifford Stein</div>
+                <div class="card_price" style="color: white;font-weight:bold;background-color:darkslategrey;padding:10px;">₹1,800</div>
+                <div class="card_footer">
+                    <button class="btn success" onclick="BuyNow('cse002')">Buy Now</button>
+                    <button class="btn info" onclick="AddToCart('cse002')">Add to Cart</button>
+                </div>
+            </div>
+            
+            <div class="card" id="cse003">
+                <img src="static/img/cse/artificial_intelligence_a_modern_approach.jpg" alt="Book">
+                <div class="card_title" style="color: rgb(40, 136, 77);">Artificial Intelligence: A Modern Approach - Stuart J. Russell, Peter Norvig</div>
+                <div class="card_price" style="color: white;font-weight:bold;background-color:darkslategrey;padding:10px;">₹2,500</div>
+                <div class="card_footer">
+                    <button class="btn success" onclick="BuyNow('cse003')">Buy Now</button>
+                    <button class="btn info" onclick="AddToCart('cse003')">Add to Cart</button>
+                </div>
+            </div>
+            
+            <div class="card" id="cse004">
+                <img src="static/img/cse/head_first_java.jpg" alt="Book">
+                <div class="card_title" style="color: rgb(40, 136, 77);">Head First Java - Kathy Sierra, Bert Bates</div>
+                <div class="card_price" style="color: white;font-weight:bold;background-color:darkslategrey;padding:10px;">₹1,200</div>
+                <div class="card_footer">
+                    <button class="btn success" onclick="BuyNow('cse004')">Buy Now</button>
+                    <button class="btn info" onclick="AddToCart('cse004')">Add to Cart</button>
+                </div>
+            </div>
+            
+            <div class="card" id="cse005">
+                <img src="static/img/cse/the_turing_guide.jpg" alt="Book">
+                <div class="card_title" style="color: rgb(40, 136, 77);">The Turing Guide - Jack Copeland, Jonathan Bowen, Mark Sprevak, Robin Wilson</div>
+                <div class="card_price" style="color: white;font-weight:bold;background-color:darkslategrey;padding:10px;">₹1,600</div>
+                <div class="card_footer">
+                    <button class="btn success" onclick="BuyNow('cse005')">Buy Now</button>
+                    <button class="btn info" onclick="AddToCart('cse005')">Add to Cart</button>
+                </div>
+            </div>        
+        </div>
+
+        <!-- ECE-->
+
+        <div class="section" id="ece" style="display: none;">
+            <div class="card" id="ece001">
+                <img src="static/img/ece/the_art_of_electronics.jpg" alt="The Art of Electronics">
+                <div class="card_title" style="color: rgb(40, 136, 77);">The Art of Electronics</div>
+                <div class="card_author" style="color: grey;">Paul Horowitz, Winfield Hill</div>
+                <div class="card_description" style="margin: 10px 0;">A comprehensive guide covering a wide range of electronics topics, from basic principles to advanced techniques, suitable for both beginners and experienced engineers.</div>
+                <div class="card_price" style="color: white; font-weight: bold; background-color: darkslategrey; padding: 10px;">₹5,500</div>
+                <div class="card_footer">
+                    <button class="btn success" onclick="BuyNow('ece001')">Buy Now</button>
+                    <button class="btn info" onclick="AddToCart('ece001')">Add to Cart</button>
+                </div>
+            </div>
+            
+            <div class="card" id="ece002">
+                <img src="static/img/ece/signals_and_systems.jpg" alt="Signals and Systems">
+                <div class="card_title" style="color: rgb(40, 136, 77);">Signals and Systems</div>
+                <div class="card_author" style="color: grey;">Alan V. Oppenheim</div>
+                <div class="card_description" style="margin: 10px 0;">An essential textbook that provides a clear introduction to the theory and application of signals and systems, fundamental to ECE studies.</div>
+                <div class="card_price" style="color: white; font-weight: bold; background-color: darkslategrey; padding: 10px;">₹3,200</div>
+                <div class="card_footer">
+                    <button class="btn success" onclick="BuyNow('ece002')">Buy Now</button>
+                    <button class="btn info" onclick="AddToCart('ece002')">Add to Cart</button>
+                </div>
+            </div>
+            
+            <div class="card" id="ece003">
+                <img src="static/img/ece/digital_signal_processing.jpg" alt="Digital Signal Processing">
+                <div class="card_title" style="color: rgb(40, 136, 77);">Digital Signal Processing: Principles, Algorithms, and Applications</div>
+                <div class="card_author" style="color: grey;">John G. Proakis</div>
+                <div class="card_description" style="margin: 10px 0;">This book offers in-depth coverage of digital signal processing concepts, algorithms, and applications, making it a valuable resource for ECE students and professionals.</div>
+                <div class="card_price" style="color: white; font-weight: bold; background-color: darkslategrey; padding: 10px;">₹4,000</div>
+                <div class="card_footer">
+                    <button class="btn success" onclick="BuyNow('ece003')">Buy Now</button>
+                    <button class="btn info" onclick="AddToCart('ece003')">Add to Cart</button>
+                </div>
+            </div>
+            
+            <div class="card" id="ece004">
+                <img src="static/img/ece/engineering_electromagnetics.jpg" alt="Engineering Electromagnetics">
+                <div class="card_title" style="color: rgb(40, 136, 77);">Engineering Electromagnetics</div>
+                <div class="card_author" style="color: grey;">William H. Hayt Jr.</div>
+                <div class="card_description" style="margin: 10px 0;">A foundational text that explores the principles of electromagnetics, crucial for understanding various aspects of ECE.</div>
+                <div class="card_price" style="color: white; font-weight: bold; background-color: darkslategrey; padding: 10px;">₹3,800</div>
+                <div class="card_footer">
+                    <button class="btn success" onclick="BuyNow('ece004')">Buy Now</button>
+                    <button class="btn info" onclick="AddToCart('ece004')">Add to Cart</button>
+                </div>
+            </div>
+            
+                <div class="card" id="ece005">
+                    <img src="static/img/ece/communication_systems.jpg" alt="Communication Systems">
+                    <div class="card_title" style="color: rgb(40, 136, 77);">Communication Systems</div>
+                    <div class="card_author" style="color: grey;">Simon Haykin</div>
+                    <div class="card_description" style="margin: 10px 0;">An authoritative resource on analog and digital communication systems, covering both theoretical and practical aspects.</div>
+                    <div class="card_price" style="color: white; font-weight: bold; background-color: darkslategrey; padding: 10px;">₹4,500</div>
+                    <div class="card_footer">
+                        <button class="btn success" onclick="BuyNow('ece005')">Buy Now</button>
+                        <button class="btn info" onclick="AddToCart('ece005')">Add to Cart</button>
+                    </div>
+                </div>
+            
+        </div>
+
+        <!-- EEE -->
+        <div class="section" id="eee" style="display: none;">
+            <div class="card" id="eee001">
+                <img src="static/img/eee/art_of_electronics.jpg" alt="The Art of Electronics">
+                <div class="card_title" style="color: rgb(40, 136, 77);">The Art of Electronics</div>
+                <div class="card_author" style="color: grey;">Paul Horowitz and Winfield Hill</div>
+                <div class="card_description" style="margin: 10px 0;">A comprehensive guide to analog and digital electronics, covering circuit design, analysis, and practical applications.</div>
+                <div class="card_price" style="color: white; font-weight: bold; background-color: darkslategrey; padding: 10px;">₹7,500</div>
+                <div class="card_footer">
+                    <button class="btn success" onclick="BuyNow('eee001')">Buy Now</button>
+                    <button class="btn info" onclick="AddToCart('eee001')">Add to Cart</button>
+                </div>
+            </div>
+            
+            <div class="card" id="eee002">
+                <img src="static/img/eee/principles_of_electronics.jpg" alt="Principles of Electronics">
+                <div class="card_title" style="color: rgb(40, 136, 77);">Principles of Electronics</div>
+                <div class="card_author" style="color: grey;">Colin Simpson</div>
+                <div class="card_description" style="margin: 10px 0;">A comprehensive overview of basic electronic principles, including theorems, circuit behavior, and problem-solving procedures.</div>
+                <div class="card_price" style="color: white; font-weight: bold; background-color: darkslategrey; padding: 10px;">₹5,200</div>
+                <div class="card_footer">
+                    <button class="btn success" onclick="BuyNow('eee002')">Buy Now</button>
+                    <button class="btn info" onclick="AddToCart('eee002')">Add to Cart</button>
+                </div>
+            </div>
+            
+            <div class="card" id="eee003">
+                <img src="static/img/eee/micro_electronics.jpg" alt="Microelectronic Circuits">
+                <div class="card_title" style="color: rgb(40, 136, 77);">Microelectronic Circuits</div>
+                <div class="card_author" style="color: grey;">Adel S. Sedra and Kenneth C. Smith</div>
+                <div class="card_description" style="margin: 10px 0;">A detailed analysis of microelectronic circuits, focusing on the design and application of integrated circuits.</div>
+                <div class="card_price" style="color: white; font-weight: bold; background-color: darkslategrey; padding: 10px;">₹4,500</div>
+                <div class="card_footer">
+                    <button class="btn success" onclick="BuyNow('eee003')">Buy Now</button>
+                    <button class="btn info" onclick="AddToCart('eee003')">Add to Cart</button>
+                </div>
+            </div>
+            
+            <div class="card" id="eee004">
+                <img src="static/img/eee/electric_machinery_electronics.jpg" alt="Electric Machinery Fundamentals">
+                <div class="card_title" style="color: rgb(40, 136, 77);">Electric Machinery Fundamentals</div>
+                <div class="card_author" style="color: grey;">Stephen J. Chapman</div>
+                <div class="card_description" style="margin: 10px 0;">An in-depth study of electric machinery, covering fundamental concepts and practical applications.</div>
+                <div class="card_price" style="color: white; font-weight: bold; background-color: darkslategrey; padding: 10px;">₹5,000</div>
+                <div class="card_footer">
+                    <button class="btn success" onclick="BuyNow('eee004')">Buy Now</button>
+                    <button class="btn info" onclick="AddToCart('eee004')">Add to Cart</button>
+                </div>
+            </div>
+            
+            <div class="card" id="eee005">
+                <img src="static/img/eee/electrodynamics.jpg" alt="Introduction to Electrodynamics">
+                <div class="card_title" style="color: rgb(40, 136, 77);">Introduction to Electrodynamics</div>
+                <div class="card_author" style="color: grey;">David J. Griffiths</div>
+                <div class="card_description" style="margin: 10px 0;">An accessible introduction to electromagnetism, emphasizing conceptual understanding and practical applications.</div>
+                <div class="card_price" style="color: white; font-weight: bold; background-color: darkslategrey; padding: 10px;">₹3,800</div>
+                <div class="card_footer">
+                    <button class="btn success" onclick="BuyNow('eee005')">Buy Now</button>
+                    <button class="btn info" onclick="AddToCart('eee005')">Add to Cart</button>
+                </div>
+            </div>
+        </div>
+
+        <!--MECH-->
+        <div class="section" id="mech" style="display: none;">
+            <div class="card" id="mech001">
+                <img src="static/img/mech/Fundamentals_of_Engineering_Thermodynamics.jpg" alt="Fundamentals of Engineering Thermodynamics">
+                <div class="card_title" style="color: rgb(40, 136, 77);">Fundamentals of Engineering Thermodynamics</div>
+                <div class="card_author" style="color: grey;">Michael J. Moran, Howard N. Shapiro</div>
+                <div class="card_description" style="margin: 10px 0;">A comprehensive guide covering core thermodynamic principles and their engineering applications.</div>
+                <div class="card_price" style="color: white; font-weight: bold; background-color: darkslategrey; padding: 10px;">₹7,500</div>
+                <div class="card_footer">
+                    <button class="btn success" onclick="BuyNow('mech001')">Buy Now</button>
+                    <button class="btn info" onclick="AddToCart('mech001')">Add to Cart</button>
+                </div>
+            </div>
+            
+            <div class="card" id="mech002">
+                <img src="static/img/mech/Fluid_Mechanics.jpg" alt="Fluid Mechanics">
+                <div class="card_title" style="color: rgb(40, 136, 77);">Fluid Mechanics</div>
+                <div class="card_author" style="color: grey;">Philip M. Gerhart, Andrew L. Gerhart, John I. Hochstein</div>
+                <div class="card_description" style="margin: 10px 0;">A well-structured book explaining fluid mechanics concepts with real-world engineering applications.</div>
+                <div class="card_price" style="color: white; font-weight: bold; background-color: darkslategrey; padding: 10px;">₹5,200</div>
+                <div class="card_footer">
+                    <button class="btn success" onclick="BuyNow('mech002')">Buy Now</button>
+                    <button class="btn info" onclick="AddToCart('mech002')">Add to Cart</button>
+                </div>
+            </div>
+            
+            <div class="card" id="mech003">
+                <img src="static/img/mech/Machine_Design.jpg" alt="Shigley's Mechanical Engineering Design">
+                <div class="card_title" style="color: rgb(40, 136, 77);">Shigley's Mechanical Engineering Design</div>
+                <div class="card_author" style="color: grey;">Richard G. Budynas, J. Keith Nisbett</div>
+                <div class="card_description" style="margin: 10px 0;">A definitive reference on mechanical design principles with problem-solving techniques.</div>
+                <div class="card_price" style="color: white; font-weight: bold; background-color: darkslategrey; padding: 10px;">₹6,000</div>
+                <div class="card_footer">
+                    <button class="btn success" onclick="BuyNow('mech003')">Buy Now</button>
+                    <button class="btn info" onclick="AddToCart('mech003')">Add to Cart</button>
+                </div>
+            </div>
+            
+            <div class="card" id="mech004">
+                <img src="static/img/mech/Maniufacturing.jpg" alt="Manufacturing Engineering and Technology">
+                <div class="card_title" style="color: rgb(40, 136, 77);">Manufacturing Engineering and Technology</div>
+                <div class="card_author" style="color: grey;">Serope Kalpakjian, Steven R. Schmid</div>
+                <div class="card_description" style="margin: 10px 0;">Covers modern manufacturing processes, materials, and technological advancements.</div>
+                <div class="card_price" style="color: white; font-weight: bold; background-color: darkslategrey; padding: 10px;">₹5,500</div>
+                <div class="card_footer">
+                    <button class="btn success" onclick="BuyNow('mech004')">Buy Now</button>
+                    <button class="btn info" onclick="AddToCart('mech004')">Add to Cart</button>
+                </div>
+            </div>
+            
+            <div class="card" id="mech005">
+                <img src="static/img/mech/Dynamics.jpg" alt="Mechanical Vibrations">
+                <div class="card_title" style="color: rgb(40, 136, 77);">Mechanical Vibrations</div>
+                <div class="card_author" style="color: grey;">Singiresu S. Rao</div>
+                <div class="card_description" style="margin: 10px 0;">An extensive guide on vibrations, oscillations, and dynamic systems in mechanical engineering.</div>
+                <div class="card_price" style="color: white; font-weight: bold; background-color: darkslategrey; padding: 10px;">₹6,800</div>
+                <div class="card_footer">
+                    <button class="btn success" onclick="BuyNow('mech005')">Buy Now</button>
+                    <button class="btn info" onclick="AddToCart('mech005')">Add to Cart</button>
+                </div>
+            </div>            
+        </div>
+
+        <!--CE-->
+        <div class="section" id="ce" style="display: none;">
+            <div class="card" id="civil001">
+                <img src="static/img/ce/Building_Construction.webp" alt="Building Construction">
+                <div class="card_title" style="color: rgb(40, 136, 77);">Building Construction</div>
+                <div class="card_author" style="color: grey;">B.C. Punmia</div>
+                <div class="card_description" style="margin: 10px 0;">A detailed book covering modern construction techniques, materials, and structural design principles.</div>
+                <div class="card_price" style="color: white; font-weight: bold; background-color: darkslategrey; padding: 10px;">₹4,200</div>
+                <div class="card_footer">
+                    <button class="btn success" onclick="BuyNow('civil001')">Buy Now</button>
+                    <button class="btn info" onclick="AddToCart('civil001')">Add to Cart</button>
+                </div>
+            </div>
+            
+            <div class="card" id="civil002">
+                <img src="static/img/ce/Structural_Analysis.webp" alt="Structural Analysis">
+                <div class="card_title" style="color: rgb(40, 136, 77);">Structural Analysis</div>
+                <div class="card_author" style="color: grey;">R.C. Hibbeler</div>
+                <div class="card_description" style="margin: 10px 0;">Covers fundamental concepts of structural engineering with practical problem-solving techniques.</div>
+                <div class="card_price" style="color: white; font-weight: bold; background-color: darkslategrey; padding: 10px;">₹5,000</div>
+                <div class="card_footer">
+                    <button class="btn success" onclick="BuyNow('civil002')">Buy Now</button>
+                    <button class="btn info" onclick="AddToCart('civil002')">Add to Cart</button>
+                </div>
+            </div>
+            
+            <div class="card" id="civil003">
+                <img src="static/img/ce/Soil_Mechanics.webp" alt="Soil Mechanics">
+                <div class="card_title" style="color: rgb(40, 136, 77);">Soil Mechanics</div>
+                <div class="card_author" style="color: grey;">Karl Terzaghi</div>
+                <div class="card_description" style="margin: 10px 0;">An essential book on geotechnical engineering, covering soil properties, classification, and stability.</div>
+                <div class="card_price" style="color: white; font-weight: bold; background-color: darkslategrey; padding: 10px;">₹3,800</div>
+                <div class="card_footer">
+                    <button class="btn success" onclick="BuyNow('civil003')">Buy Now</button>
+                    <button class="btn info" onclick="AddToCart('civil003')">Add to Cart</button>
+                </div>
+            </div>
+            
+            <div class="card" id="civil004">
+                <img src="static/img/ce/Transportation_Engineer.webp" alt="Transportation Engineering">
+                <div class="card_title" style="color: rgb(40, 136, 77);">Transportation Engineering</div>
+                <div class="card_author" style="color: grey;">C.S. Papacostas</div>
+                <div class="card_description" style="margin: 10px 0;">Explores highway and traffic engineering, design, and planning concepts for urban and rural transport.</div>
+                <div class="card_price" style="color: white; font-weight: bold; background-color: darkslategrey; padding: 10px;">₹4,500</div>
+                <div class="card_footer">
+                    <button class="btn success" onclick="BuyNow('civil004')">Buy Now</button>
+                    <button class="btn info" onclick="AddToCart('civil004')">Add to Cart</button>
+                </div>
+            </div>
+            
+            <div class="card" id="civil005">
+                <img src="static/img/ce/Concrete_Technology.webp" alt="Concrete Technology">
+                <div class="card_title" style="color: rgb(40, 136, 77);">Concrete Technology</div>
+                <div class="card_author" style="color: grey;">M.S. Shetty</div>
+                <div class="card_description" style="margin: 10px 0;">Comprehensive coverage on concrete properties, mix design, and modern construction practices.</div>
+                <div class="card_price" style="color: white; font-weight: bold; background-color: darkslategrey; padding: 10px;">₹4,000</div>
+                <div class="card_footer">
+                    <button class="btn success" onclick="BuyNow('civil005')">Buy Now</button>
+                    <button class="btn info" onclick="AddToCart('civil005')">Add to Cart</button>
+                </div>
+            </div>
+        </div>
+
+        <!--CHE-->
+        <div class="section" id="che" style="display: none;">
+            <div class="card" id="chem001">
+                <img src="static/img/che/Chemical_Engineering_Volume_1.webp" alt="Chemical Engineering Volume 1">
+                <div class="card_title" style="color: rgb(40, 136, 77);">Chemical Engineering Volume 1</div>
+                <div class="card_author" style="color: grey;">Coulson & Richardson</div>
+                <div class="card_description" style="margin: 10px 0;">A comprehensive guide covering chemical engineering fundamentals and principles.</div>
+                <div class="card_price" style="color: white; font-weight: bold; background-color: darkslategrey; padding: 10px;">₹5,500</div>
+                <div class="card_footer">
+                    <button class="btn success" onclick="BuyNow('chem001')">Buy Now</button>
+                    <button class="btn info" onclick="AddToCart('chem001')">Add to Cart</button>
+                </div>
+            </div>
+            
+            <div class="card" id="chem002">
+                <img src="static/img/che/Transportation _Process.webp" alt="Transport Processes">
+                <div class="card_title" style="color: rgb(40, 136, 77);">Transport Processes and Separation Process Principles</div>
+                <div class="card_author" style="color: grey;">Christie J. Geankoplis</div>
+                <div class="card_description" style="margin: 10px 0;">Explains fluid mechanics, heat and mass transfer, and separation processes.</div>
+                <div class="card_price" style="color: white; font-weight: bold; background-color: darkslategrey; padding: 10px;">₹6,200</div>
+                <div class="card_footer">
+                    <button class="btn success" onclick="BuyNow('chem002')">Buy Now</button>
+                    <button class="btn info" onclick="AddToCart('chem002')">Add to Cart</button>
+                </div>
+            </div>
+            
+            <div class="card" id="chem003">
+                <img src="static/img/che/Chemical_Engineering_Thermodynamics.webp" alt="Introduction to Chemical Engineering Thermodynamics">
+                <div class="card_title" style="color: rgb(40, 136, 77);">Introduction to Chemical Engineering Thermodynamics</div>
+                <div class="card_author" style="color: grey;">Smith & Van Ness</div>
+                <div class="card_description" style="margin: 10px 0;">Provides a thorough introduction to thermodynamics for chemical engineers.</div>
+                <div class="card_price" style="color: white; font-weight: bold; background-color: darkslategrey; padding: 10px;">₹4,800</div>
+                <div class="card_footer">
+                    <button class="btn success" onclick="BuyNow('chem003')">Buy Now</button>
+                    <button class="btn info" onclick="AddToCart('chem003')">Add to Cart</button>
+                </div>
+            </div>
+            
+            <div class="card" id="chem004">
+                <img src="static/img/che/Chemical_Reaction_Engineering.webp" alt="Elements of Chemical Reaction Engineering">
+                <div class="card_title" style="color: rgb(40, 136, 77);">Elements of Chemical Reaction Engineering</div>
+                <div class="card_author" style="color: grey;">H. Scott Fogler</div>
+                <div class="card_description" style="margin: 10px 0;">A fundamental book covering reaction kinetics, reactor design, and modeling.</div>
+                <div class="card_price" style="color: white; font-weight: bold; background-color: darkslategrey; padding: 10px;">₹5,000</div>
+                <div class="card_footer">
+                    <button class="btn success" onclick="BuyNow('chem004')">Buy Now</button>
+                    <button class="btn info" onclick="AddToCart('chem004')">Add to Cart</button>
+                </div>
+            </div>
+            
+            <div class="card" id="chem005">
+                <img src="static/img/che/Process_Dynamics_Control.webp" alt="Process Dynamics and Control">
+                <div class="card_title" style="color: rgb(40, 136, 77);">Process Dynamics and Control</div>
+                <div class="card_author" style="color: grey;">Dale E. Seborg</div>
+                <div class="card_description" style="margin: 10px 0;">Focuses on process control principles, modeling, and dynamic behavior.</div>
+                <div class="card_price" style="color: white; font-weight: bold; background-color: darkslategrey; padding: 10px;">₹5,300</div>
+                <div class="card_footer">
+                    <button class="btn success" onclick="BuyNow('chem005')">Buy Now</button>
+                    <button class="btn info" onclick="AddToCart('chem005')">Add to Cart</button>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="section" id="mme" style="display: none;">
+            <div class="card" id="mat001">
+                <img src="static/img/mme/Physical_Metallurgy.webp" alt="Physical Metallurgy">
+                <div class="card_title" style="color: rgb(40, 136, 77);">Physical Metallurgy</div>
+                <div class="card_author" style="color: grey;">William F. Hosford</div>
+                <div class="card_description" style="margin: 10px 0;">Covers fundamental concepts and principles of physical metallurgy.</div>
+                <div class="card_price" style="color: white; font-weight: bold; background-color: darkslategrey; padding: 10px;">₹6,200</div>
+                <div class="card_footer">
+                    <button class="btn success" onclick="BuyNow('mat001')">Buy Now</button>
+                    <button class="btn info" onclick="AddToCart('mat001')">Add to Cart</button>
+                </div>
+            </div>
+            
+            <div class="card" id="mat002">
+                <img src="static/img/mme/Introduction_to_Metallurgy.webp" alt="Introduction to Metallurgy">
+                <div class="card_title" style="color: rgb(40, 136, 77);">Introduction to Metallurgy</div>
+                <div class="card_author" style="color: grey;">David Gaskell</div>
+                <div class="card_description" style="margin: 10px 0;">Provides an in-depth understanding of metallurgical processes.</div>
+                <div class="card_price" style="color: white; font-weight: bold; background-color: darkslategrey; padding: 10px;">₹5,800</div>
+                <div class="card_footer">
+                    <button class="btn success" onclick="BuyNow('mat002')">Buy Now</button>
+                    <button class="btn info" onclick="AddToCart('mat002')">Add to Cart</button>
+                </div>
+            </div>
+            
+            <div class="card" id="mat003">
+                <img src="static/img/mme/Materials_Science_and_Engineering.webp" alt="Materials Science and Engineering">
+                <div class="card_title" style="color: rgb(40, 136, 77);">Materials Science and Engineering</div>
+                <div class="card_author" style="color: grey;">William D. Callister</div>
+                <div class="card_description" style="margin: 10px 0;">A fundamental book on materials science concepts.</div>
+                <div class="card_price" style="color: white; font-weight: bold; background-color: darkslategrey; padding: 10px;">₹7,000</div>
+                <div class="card_footer">
+                    <button class="btn success" onclick="BuyNow('mat003')">Buy Now</button>
+                    <button class="btn info" onclick="AddToCart('mat003')">Add to Cart</button>
+                </div>
+            </div>
+            
+            <div class="card" id="mat004">
+                <img src="static/img/mme/Mechanical_Metallurgy.webp" alt="Mechanical Metallurgy">
+                <div class="card_title" style="color: rgb(40, 136, 77);">Mechanical Metallurgy</div>
+                <div class="card_author" style="color: grey;">George E. Dieter</div>
+                <div class="card_description" style="margin: 10px 0;">Explores mechanical behavior and metallurgical processes.</div>
+                <div class="card_price" style="color: white; font-weight: bold; background-color: darkslategrey; padding: 10px;">₹6,500</div>
+                <div class="card_footer">
+                    <button class="btn success" onclick="BuyNow('mat004')">Buy Now</button>
+                    <button class="btn info" onclick="AddToCart('mat004')">Add to Cart</button>
+                </div>
+            </div>
+            
+            <div class="card" id="mat005">
+                <img src="static/img/mme/Principles_of_Extractive_Metallurgy.webp" alt="Principles of Extractive Metallurgy">
+                <div class="card_title" style="color: rgb(40, 136, 77);">Principles of Extractive Metallurgy</div>
+                <div class="card_author" style="color: grey;">Terkel Rosenqvist</div>
+                <div class="card_description" style="margin: 10px 0;">Detailed analysis of metal extraction techniques.</div>
+                <div class="card_price" style="color: white; font-weight: bold; background-color: darkslategrey; padding: 10px;">₹6,800</div>
+                <div class="card_footer">
+                    <button class="btn success" onclick="BuyNow('mat005')">Buy Now</button>
+                    <button class="btn info" onclick="AddToCart('mat005')">Add to Cart</button>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+
+    <script>
+        // Display the Products based on the Department  
+        document.getElementById("department").addEventListener('change',function(){
+            document.querySelectorAll(".section").forEach(sec => sec.style.display="none");
+            let dept = this.value;
+            let displayText = "";
+            switch(dept){
+                case "cse":
+                  displayText="<b>COMPUTER SCIENCE AND ENGINEERING</b>";break;
+                case "ece":
+                  displayText="<b>ELECTRONICS AND COMMUNICATION ENGINEERING<b/>";break;
+                case "eee":
+                  displayText="<b>ELECTRICAL AND ELECTRONICS ENGINEERING</b>";break;
+                case "che":
+                  displayText="<b>CHEMICAL ENGINEERING</b>";break;
+                case "ce":
+                  displayText="<b>CIVIL ENGINEERING</b>";break;
+                case "mme":
+                   displayText="<b>MATERIAL AND METALLURGICAL ENGINEERING</b>";break;
+                case "mech":
+                   displayText="<b>MECHANICAL ENGINEERING</b>";break;
+            }   
+            document.querySelector(".section_heading").innerHTML=displayText;
+            document.getElementById(dept).style.display="flex";
+        });
+    </script>
+    <div class="footer">
+        <h3>COPYRIGHT &copy; &nbsp;&nbsp; | &nbsp;&nbsp; 2025 BHAVITH KUMAR &nbsp;&nbsp;| &nbsp;&nbsp;  ALL RIGHTS RESERVED</h3>
+    </div>
+</body>
+</html>
