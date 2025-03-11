@@ -35,7 +35,6 @@ function AddToCart(book_id) {
     setTimeout(() => {
         popup.classList.remove("show_popup");
         popup.classList.add("hide_popup");
-        popup.style.display = "none";
     }, 3000);
 }
 
